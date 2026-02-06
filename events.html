@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="assets/imgs/logo-orange.png" type="image/x-icon">
+    <title>Events & Community - Piyush Kumar Rai</title>
+    <!-- Using the same CSS file as main page -->
+    <link rel="stylesheet" href="style.css">
+
+     <!--=============== REMIXICONS ===============-->
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+
+
+    <style>
+        /* 
+        ================================================================
+        EVENTS PAGE SPECIFIC STYLES
+        - Additional styles for photo galleries
+        - Event section layouts
+        ================================================================
+        */
+        
+        /* Page header section */
+        .page-header {
+            padding-top: 120px;
+            padding-bottom: var(--spacing-lg);
+            text-align: center;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .page-header h1 {
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .page-header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Back to home link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--accent);
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Individual event section */
+        .event-section {
+            padding: var(--spacing-xl) 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .event-section:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+        
+        .event-section:nth-child(odd) {
+            background: var(--bg-primary);
+        }
+        
+        /* Event header */
+        .event-header {
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+            padding-left: var(--spacing-md);
+            border-left: 3px solid var(--accent);
+        }
+        
+        .event-header h2 {
+            margin-bottom: var(--spacing-xs);
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+        }
+        
+        .event-meta {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.9rem;
+        }
+        
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--text-muted);
+        }
+        
+        .event-meta-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent);
+        }
+        
+        .event-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 800px;
+        }
+        
+        /* Photo gallery grid */
+        .event-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        
+        .event-photo {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            background: var(--bg-card);
+        }
+        
+        .event-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            display: block;
+        }
+        
+        .event-photo:hover img {
+            transform: scale(1.08);
+            filter: brightness(1.1);
+        }
+        
+        .event-photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-sm);
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .event-photo:hover .event-photo-caption {
+            transform: translateY(0);
+        }
+        
+        /* Stats section */
+        .event-stats {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 2rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .event-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: var(--spacing-sm);
+            }
+            
+            .event-stats {
+                justify-content: space-around;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .event-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 
+    ================================================================
+    NAVIGATION BAR
+    - Same navigation as main page
+    - Different active state for Events page
+    ================================================================
+    -->
+    <nav class="nav">
+        <div class="container nav-container">
+            <!-- Current time display (hidden on mobile) -->
+           
+            
+            <!-- Navigation menu links -->
+            <div class="nav-links">
+                <a href="#home" >Home</a>
+                <!---<a href="#work">Work</a>--->
+                <a href="#events" class="active">Events</a>
+                <a href="#journey">Journey</a>
+                <a href="#contact">Contact</a>
+            </div>
+
+             <div class="nav-time" id="current-time">00:00 IST</div>
+            
+            <!-- Social media icons -->
+            <div class="nav-social">
+                <a href="https://github.com/piyushkrai" target="_blank" aria-label="GitHub">
+                    <i class="ri-github-fill"></i>
+                </a>
+
+                <a href="https://www.linkedin.com/in/piyushkrrai" target="_blank" aria-label="GitHub">
+                    <i class="ri-linkedin-box-fill"></i>
+                </a>
+
+                <a href="https://twitter.com/piyushkrrai" target="_blank" aria-label="GitHub">
+                    <i class="ri-twitter-x-fill"></i>
+                </a>
+
+                <a href="https://instagram.com/piyushkrrai" target="_blank" aria-label="GitHub">
+                    <i class="ri-instagram-fill"></i>
+                </a>
+
+                <a href="https://youtube.com/piyushkrrai" target="_blank" aria-label="GitHub">
+                    <i class="ri-youtube-fill"></i>
+                </a>
+
+                <a href="https://piyushkrrai.hashnode.dev/" target="_blank" aria-label="GitHub">
+                    <i class="ri-news-fill"></i>
+                </a>
+
+                <a href="https://gitlab.com/PiyushKrRai/" target="_blank" aria-label="GitHub">
+                    <i class="ri-gitlab-fill"></i>
+                </a>    
+            </div>
+        </div>
+    </nav>
+
+    <!-- 
+    ================================================================
+    PAGE HEADER
+    - Introduction to events page
+    ================================================================
+    -->
+    <section class="page-header">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Home
+            </a>
+            <h1>Events & Community</h1>
+            <p>A visual journey through the workshops, hackathons, and community gatherings I've organized and participated in.</p>
+        </div>
+    </section>
+
+    <!-- 
+    ================================================================
+    EVENT 1: CLOUDHACKS 2024
+    - 24-hour cloud-native hackathon
+    ================================================================
+    -->
+    <section class="event-section">
+        <div class="container">
+            <div class="event-header">
+                <h2>🚀 CloudHacks 2024</h2>
+                <div class="event-meta">
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        March 15-16, 2024
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        University Campus
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        150+ Participants
+                    </div>
+                </div>
+                <p class="event-description">
+                    Our flagship 24-hour hackathon focused on cloud-native applications and infrastructure. Participants built everything from serverless APIs to Kubernetes-orchestrated microservices. I coordinated mentors from AWS and Google Cloud, managed infrastructure sponsorships, and ensured everyone had access to cloud credits and support throughout the event.
+                </p>
+                
+                <!-- Event statistics -->
+                <div class="event-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">150+</span>
+                        <span class="stat-label">Participants</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">40</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Mentors</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Photo gallery for CloudHacks -->
+            <div class="event-gallery">
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop" alt="Hackathon opening ceremony">
+                    <div class="event-photo-caption">Opening ceremony and kickoff</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop" alt="Teams working">
+                    <div class="event-photo-caption">Teams collaborating on cloud projects</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop" alt="Coding session">
+                    <div class="event-photo-caption">Late night coding session</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop" alt="Mentoring">
+                    <div class="event-photo-caption">Cloud mentor helping a team debug</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop" alt="Presentations">
+                    <div class="event-photo-caption">Final project presentations</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop" alt="Winners">
+                    <div class="event-photo-caption">Winners announcement and prizes</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+    ================================================================
+    EVENT 2: DEVOPS WORKSHOP SERIES
+    - Monthly hands-on DevOps workshops
+    ================================================================
+    -->
+    <section class="event-section">
+        <div class="container">
+            <div class="event-header">
+                <h2>⚙️ DevOps Workshop Series</h2>
+                <div class="event-meta">
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Jan 2024 - Present
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Hybrid (Online + Campus)
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        50+ Per Session
+                    </div>
+                </div>
+                <p class="event-description">
+                    Monthly workshops covering the complete DevOps lifecycle. Each session is hands-on, with participants deploying real applications. Topics ranged from basic CI/CD with GitHub Actions to advanced Kubernetes deployments and monitoring with Prometheus/Grafana. All materials and recordings are available on our GitHub org.
+                </p>
+                
+                <div class="event-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Sessions</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">600+</span>
+                        <span class="stat-label">Total Attendees</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">8</span>
+                        <span class="stat-label">Topics Covered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Hands-on Labs</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Photo gallery for DevOps Workshops -->
+            <div class="event-gallery">
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=600&fit=crop" alt="Workshop session">
+                    <div class="event-photo-caption">Docker containerization workshop</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop" alt="Team discussion">
+                    <div class="event-photo-caption">Discussing CI/CD best practices</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=600&fit=crop" alt="Hands-on lab">
+                    <div class="event-photo-caption">Kubernetes deployment hands-on lab</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop" alt="Presentation">
+                    <div class="event-photo-caption">Infrastructure as Code with Terraform</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" alt="Group work">
+                    <div class="event-photo-caption">Setting up monitoring dashboards</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop" alt="Online session">
+                    <div class="event-photo-caption">Hybrid session with remote participants</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+    ================================================================
+    EVENT 3: TECH TALKS @ CAMPUS
+    - Weekly informal tech discussions
+    ================================================================
+    -->
+    <section class="event-section">
+        <div class="container">
+            <div class="event-header">
+                <h2>💬 Tech Talks @ Campus</h2>
+                <div class="event-meta">
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Every Friday, 6 PM
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Campus Auditorium
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        30-50 Per Talk
+                    </div>
+                </div>
+                <p class="event-description">
+                    Weekly informal talks where students, alumni, and industry professionals share what they're building, learning, or struggling with. No formal presentations required—just bring your curiosity and stories. Topics have ranged from "Why my startup failed" to "Building a recommendation system" to "My internship at a FAANG company."
+                </p>
+                
+                <div class="event-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Talks Hosted</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">25</span>
+                        <span class="stat-label">Speakers</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label">Total Attendees</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">Coffee Consumed</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Photo gallery for Tech Talks -->
+            <div class="event-gallery">
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&h=600&fit=crop" alt="Speaker presenting">
+                    <div class="event-photo-caption">Guest speaker from tech industry</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop" alt="Audience engaged">
+                    <div class="event-photo-caption">Engaged audience during Q&A</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=800&h=600&fit=crop" alt="Interactive session">
+                    <div class="event-photo-caption">Interactive whiteboard session</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=600&fit=crop" alt="Panel discussion">
+                    <div class="event-photo-caption">Career paths panel discussion</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?w=800&h=600&fit=crop" alt="Networking">
+                    <div class="event-photo-caption">Networking after the talk</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop" alt="Student speaker">
+                    <div class="event-photo-caption">Student sharing their project</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+    ================================================================
+    EVENT 4: OPEN SOURCE SPRINT
+    - Weekend open source contribution event
+    ================================================================
+    -->
+    <section class="event-section">
+        <div class="container">
+            <div class="event-header">
+                <h2>🔧 Open Source Sprint</h2>
+                <div class="event-meta">
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        October 2024
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Computer Lab
+                    </div>
+                    <div class="event-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        60 Contributors
+                    </div>
+                </div>
+                <p class="event-description">
+                    A weekend dedicated to introducing students to open source contribution. We selected beginner-friendly projects, taught Git workflows, and helped participants make their first pull requests. Many attendees had never used Git before—by the end, everyone had contributed to a real open source project and understood the importance of documentation, code reviews, and community guidelines.
+                </p>
+                
+                <div class="event-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">60</span>
+                        <span class="stat-label">Participants</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">45</span>
+                        <span class="stat-label">PRs Merged</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2</span>
+                        <span class="stat-label">Days</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Photo gallery for Open Source Sprint -->
+            <div class="event-gallery">
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" alt="Git workshop">
+                    <div class="event-photo-caption">Introduction to Git and GitHub</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop" alt="Code review">
+                    <div class="event-photo-caption">Pair programming and code review</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop" alt="Finding issues">
+                    <div class="event-photo-caption">Identifying good first issues</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&h=600&fit=crop" alt="Working together">
+                    <div class="event-photo-caption">Collaborating on bug fixes</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800&h=600&fit=crop" alt="First PR">
+                    <div class="event-photo-caption">Celebrating first merged PR</div>
+                </div>
+                <div class="event-photo">
+                    <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=600&fit=crop" alt="Group photo">
+                    <div class="event-photo-caption">All contributors group photo</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+    ================================================================
+    FOOTER
+    - Simple footer with back to top link
+    ================================================================
+    -->
+    <footer class="contact">
+        <div class="container">
+            <div style="text-align: center; padding: var(--spacing-lg) 0;">
+                <a href="index.html" class="contact-button" style="display: inline-flex; width: auto;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Back to Home
+                </a>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-note">Built with intention. No frameworks, just HTML, CSS, and curiosity.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactions -->
+    <script src="script.js"></script>
+    <script>
+        // Additional script for events page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Smooth reveal for event sections
+            const eventSections = document.querySelectorAll('.event-section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            eventSections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+            
+            // Photo click to zoom
+            const eventPhotos = document.querySelectorAll('.event-photo');
+            eventPhotos.forEach(photo => {
+                photo.addEventListener('click', () => {
+                    // Simple zoom toggle
+                    photo.classList.toggle('zoomed');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
